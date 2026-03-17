@@ -5,14 +5,15 @@ import (
 	"chess/internal/migration"
 	"chess/internal/routes"
 	"chess/internal/server"
-	"fmt"
+
+	// "fmt"
 	"log"
 	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 )
 
 func main() {
@@ -21,14 +22,13 @@ func main() {
 	db := db.InitDB()
 
 	r := gin.Default()
-	err := godotenv.Load("../../.env")
-	if err != nil {
-		fmt.Println("No .env file present")
-	}
+	// err := godotenv.Load("../../.env")
+	// if err != nil {
+	// 	fmt.Println("No .env file present")
+	// }
 	origin := os.Getenv("FRONTEND_URL")
 	if origin == "" {
-		fmt.Println("No origin from env")
-		origin = "http://localhost:5173"
+		log.Fatal("FRONTEND_URL is required")
 	}
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{origin},
