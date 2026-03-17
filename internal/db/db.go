@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"log"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -10,7 +11,7 @@ import (
 func InitDB() *sql.DB {
 	var db *sql.DB
 
-	dsn := `root:@tcp(127.0.0.1:3306)/chess?parseTime=true`
+	dsn := os.Getenv("DB_URL")
 
 	db, err := sql.Open("mysql", dsn)
 
