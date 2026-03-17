@@ -10,6 +10,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type AuthHandler struct {
+	DB *sql.DB
+}
+
 type RegisterRequest struct {
 	UserName string `json:"username"`
 	Email    string `json:"email"`
@@ -21,7 +25,7 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
-func Register(c *gin.Context, db *sql.DB) {
+func (h *AuthHandler) Register(c *gin.Context) {
 	var req RegisterRequest
 
 	if err := c.BindJSON(&req); err != nil {
@@ -31,18 +35,22 @@ func Register(c *gin.Context, db *sql.DB) {
 
 	hash, _ := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 
-	_, err := db.Exec(
+	res, err := h.DB.Exec(
 		`INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)`, req.UserName, req.Email, hash)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User exists"})
 		return
 	}
-
-	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
+	id, _ := res.LastInsertId()
+	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully", "data": gin.H{
+		"id":       id,
+		"username": req.UserName,
+		"email":    req.Email,
+	}})
 }
 
-func Login(c *gin.Context, db *sql.DB) {
+func (h *AuthHandler) Login(c *gin.Context) {
 	var req LoginRequest
 
 	if err := c.BindJSON(&req); err != nil {
@@ -52,7 +60,7 @@ func Login(c *gin.Context, db *sql.DB) {
 
 	var id int
 	var password_hash string
-	err := db.QueryRow(`SELECT id, password_hash FROM users WHERE email = ?`, req.Email).Scan(&id, &password_hash)
+	err := h.DB.QueryRow(`SELECT id, password_hash FROM users WHERE email = ?`, req.Email).Scan(&id, &password_hash)
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User does not exist"})

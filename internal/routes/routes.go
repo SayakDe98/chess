@@ -8,10 +8,7 @@ import (
 )
 
 func RegisterRoutes(r *gin.Engine, db *sql.DB) {
-	r.POST("/register", func(c *gin.Context) {
-		handlers.Register(c, db)
-	})
-	r.POST("/login", func(c *gin.Context) {
-		handlers.Login(c, db)
-	})
+	authHandler := &handlers.AuthHandler{DB: db}
+	r.POST("/users/register", authHandler.Register)
+	r.POST("/users/login", authHandler.Login)
 }
