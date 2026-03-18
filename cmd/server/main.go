@@ -18,14 +18,14 @@ import (
 
 func main() {
 	manager := server.NewGameManager()
-
-	db := db.InitDB()
-
-	r := gin.Default()
 	// err := godotenv.Load("../../.env")
 	// if err != nil {
 	// 	fmt.Println("No .env file present")
 	// }
+	db := db.InitDB()
+
+	r := gin.Default()
+
 	origin := os.Getenv("FRONTEND_URL")
 	if origin == "" {
 		log.Fatal("FRONTEND_URL is required")

@@ -59,8 +59,9 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	}
 
 	var id int
+	var username string
 	var password_hash string
-	err := h.DB.QueryRow(`SELECT id, password_hash FROM users WHERE email = ?`, req.Email).Scan(&id, &password_hash)
+	err := h.DB.QueryRow(`SELECT username, id, password_hash FROM users WHERE email = ?`, req.Email).Scan(&username, &id, &password_hash)
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User does not exist"})
@@ -73,16 +74,17 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	token := GenerateJWT(id)
+	token := GenerateJWT(id, username)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "token": token})
 }
 
-func GenerateJWT(userId int) string {
+func GenerateJWT(userId int, username string) string {
 	secret := []byte(os.Getenv("JWT_SECRET"))
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": userId,
+		"user_id":  userId,
+		"username": username,
 	})
 
 	tokenString, _ := token.SignedString(secret)
