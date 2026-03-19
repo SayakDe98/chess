@@ -5,23 +5,26 @@ import (
 	"chess/internal/migration"
 	"chess/internal/routes"
 	"chess/internal/server"
+	"fmt"
 
-	// "fmt"
 	"log"
 	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	// "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	manager := server.NewGameManager()
-	// err := godotenv.Load("../../.env")
-	// if err != nil {
-	// 	fmt.Println("No .env file present")
-	// }
+	if os.Getenv("APP_ENV") != "production" {
+		err := godotenv.Load("../../.env")
+		if err != nil {
+			fmt.Println("No .env file present")
+		}
+	}
+
 	db := db.InitDB()
 
 	r := gin.Default()

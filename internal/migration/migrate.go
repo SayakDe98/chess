@@ -18,10 +18,12 @@ func RunMigrations(db *sql.DB) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	migrationFile := "file://internal/migrations"
+	if os.Getenv("APP_ENV") != "production" {
+		migrationFile = "file://../../internal/migrations"
+	}
 	m, err := migrate.NewWithDatabaseInstance(
-		// "file://../../internal/migrations", // local
-		"file://internal/migrations", // prod
+		migrationFile,
 		"mysql",
 		driver,
 	)
