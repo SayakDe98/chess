@@ -84,6 +84,8 @@ jobs:
             FRONTEND_URL=${{ secrets.FRONTEND_URL }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             DB_URL=${{ secrets.DB_URL }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
             EOF
 
             # Run container

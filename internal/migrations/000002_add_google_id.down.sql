@@ -1,0 +1,3 @@
+ALTER TABLE users
+MODIFY COLUMN password_hash VARCHAR(255) NOT NULL,
+DROP COLUMN google_id;
